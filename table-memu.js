@@ -7,6 +7,7 @@
             this.height = height;
         }
     }
+
     const SELECTED_TD_CLASS = 'selected-td';
     var tableElement = document.querySelector('table');
     var mouseSelection = document.querySelector('.mouse-selection');
@@ -62,21 +63,21 @@
         const box = document.querySelector('.table-memu-box');
 
         const mergeCellBtn = box.querySelector('.merge-cell');
-        mergeCellBtn.addEventListener( 'click',mergeCell);
+        mergeCellBtn.addEventListener('click', mergeCell);
 
         const cancelMergeCellBtn = box.querySelector('.cancel-merge-cell');
-        cancelMergeCellBtn.addEventListener( 'click',cancelMergeCell);
+        cancelMergeCellBtn.addEventListener('click', cancelMergeCell);
     }
 
     /**
-      * 合并选中单元格
-      * @author 肖乐 <2104553252@qq.com>
-      * @data 2019-06-28
-      */
+     * 合并选中单元格
+     * @author 肖乐 <2104553252@qq.com>
+     * @data 2019-06-28
+     */
     function mergeCell() {
         let tds = [...tableElement.querySelectorAll(`.${SELECTED_TD_CLASS}`)];
         let startTd = tds.shift();
-        let endTd = tds[tds.length-1];
+        let endTd = tds[tds.length - 1];
         const startTdRowIndex = startTd.parentElement.rowIndex;
         const startTdCellIndex = startTd.cellIndex;
 
@@ -86,38 +87,39 @@
         const rowSpan = endTdRowIndex - startTdRowIndex + 1;
         const colSpan = endTdCellIndex - startTdCellIndex + 1;
 
-        startTd.rowSpan=rowSpan;
-        startTd.colSpan=colSpan;
+        startTd.rowSpan = rowSpan;
+        startTd.colSpan = colSpan;
 
         startTd.style.width = `${colSpan * 200}px`;
 
-        tds.forEach( td=>{
+        tds.forEach(td => {
             td.remove();
         })
     }
 
     /**
-      * 取消合并单元格
-      * @author 肖乐 <2104553252@qq.com>
-      * @data 2019-06-29
-      */
-    function cancelMergeCell(){
+     * 取消合并单元格
+     * @author 肖乐 <2104553252@qq.com>
+     * @data 2019-06-29
+     */
+    function cancelMergeCell() {
         let tds = [...tableElement.querySelectorAll(`.${SELECTED_TD_CLASS}`)];
-        if(tds.length > 1) {
+        if (tds.length > 1) {
             console.warn('选中了多个td，无法取消合并单元格');
             return;
         }
 
         const cancelMergeCell = tds.shift();
         const cancelMergeRow = cancelMergeCell.parentElement;
-        const {rowSpan,colSpan,cellIndex} = cancelMergeCell;
+        const {rowSpan, colSpan, cellIndex} = cancelMergeCell;
 
+        if (rowSpan == 1 && colSpan == 1) return;
 
         let currentRow = cancelMergeRow;
-        for(let i = 0 ; i< rowSpan ; i++){
+        for (let i = 0; i < rowSpan; i++) {
             let j = i == 0 ? 1 : 0;
-            for(;j < colSpan;j++){
-                const createCellIndex = cellIndex+j;
+            for (; j < colSpan; j++) {
+                const createCellIndex = cellIndex + j;
                 currentRow.insertCell(createCellIndex);
             }
             currentRow = currentRow.nextElementSibling;
