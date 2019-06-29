@@ -60,8 +60,12 @@
      */
     function bindTableMemuEvent() {
         const box = document.querySelector('.table-memu-box');
+
         const mergeCellBtn = box.querySelector('.merge-cell');
         mergeCellBtn.addEventListener( 'click',mergeCell);
+
+        const cancelMergeCellBtn = box.querySelector('.cancel-merge-cell');
+        cancelMergeCellBtn.addEventListener( 'click',cancelMergeCell);
     }
 
     /**
@@ -82,14 +86,46 @@
         const rowSpan = endTdRowIndex - startTdRowIndex + 1;
         const colSpan = endTdCellIndex - startTdCellIndex + 1;
 
-        startTd.colSpan=colSpan;
         startTd.rowSpan=rowSpan;
+        startTd.colSpan=colSpan;
 
         startTd.style.width = `${colSpan * 200}px`;
 
         tds.forEach( td=>{
             td.remove();
         })
+    }
+
+    /**
+      * 取消合并单元格
+      * @author 肖乐 <2104553252@qq.com>
+      * @data 2019-06-29
+      */
+    function cancelMergeCell(){
+        let tds = [...tableElement.querySelectorAll(`.${SELECTED_TD_CLASS}`)];
+        if(tds.length > 1) {
+            console.warn('选中了多个td，无法取消合并单元格');
+            return;
+        }
+
+        const cancelMergeCell = tds.shift();
+        const cancelMergeRow = cancelMergeCell.parentElement;
+        const {rowSpan,colSpan,cellIndex} = cancelMergeCell;
+
+
+        let currentRow = cancelMergeRow;
+        for(let i = 0 ; i< rowSpan ; i++){
+            let j = i == 0 ? 1 : 0;
+            for(;j < colSpan;j++){
+                const createCellIndex = cellIndex+j;
+                currentRow.insertCell(createCellIndex);
+            }
+            currentRow = currentRow.nextElementSibling;
+        }
+
+        cancelMergeCell.rowSpan = 1;
+        cancelMergeCell.colSpan = 1;
+        cancelMergeCell.removeAttribute('style')
     }
 
     /**
